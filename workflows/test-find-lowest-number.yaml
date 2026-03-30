@@ -1,0 +1,45 @@
+name: Test find_lowest_number.py
+
+on:
+  push:
+
+jobs:
+  test-application:
+    name: Run automated tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test_case:
+          - name: Test case 1 - 10 numbers
+            input_file: test_data/test1_input.txt
+            expected_file: test_data/test1_expected.txt
+            output_file: test_data/test1_output.txt
+          - name: Test case 2 - 1 number
+            input_file: test_data/test2_input.txt
+            expected_file: test_data/test2_expected.txt
+            output_file: test_data/test2_output.txt
+          - name: Test case 3 - blank file
+            input_file: test_data/test3_input.txt
+            expected_file: test_data/test3_expected.txt
+            output_file: test_data/test3_output.txt
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run ${{ matrix.test_case.name }}
+        run: |
+          python3 find_lowest_number.py \
+            "${{ matrix.test_case.input_file }}" \
+            "${{ matrix.test_case.output_file }}"
+
+      - name: Compare actual output to expected output
+        run: |
+          diff "${{ matrix.test_case.expected_file }}" "${{ matrix.test_case.output_file }}"
